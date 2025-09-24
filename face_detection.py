@@ -9,15 +9,17 @@ class faceDetector:
     def __init__(self,static_mode=True,max_faces=2,minDetectionCon=0.5,minTrackCon=0.5):
         self.static_mode = static_mode
         self.max_faces = max_faces
-        self.minDeetectionCon = minDetectionCon
+        self.minDetectionCon = minDetectionCon
         self.minTrackCon = minTrackCon
-        self.mpDraw = mp.solution.drawing_utils
-        self.mpFaceMesh = mp.solution.face_mesh
+        self.mpDraw = mp.solutions.drawing_utils
+        self.mpFaceMesh = mp.solutions.face_mesh
         self.faceMesh = self.mpFaceMesh.FaceMesh(
-                self.static_mode,
-                self.max_faces,
-                self.minDetectionCon,
-                self.minTrackinhCon)
+                static_image_mode=self.static_mode,
+                max_num_faces=self.max_faces,
+                refine_landmarks=True,
+                min_detection_confidence=self.minDetectionCon,
+                min_tracking_confidence=self.minTrackCon
+                )
         self.drawSpec = self.mpDraw.DrawingSpec(
                 thickness = 1,
                 circle_radius= 2
@@ -33,7 +35,7 @@ class faceDetector:
                     self.mpDraw.draw_landmarks(
                             img,
                             faceLms,
-                            self.mpFaceMesh.FACE_CONNECTIONS,
+                            self.mpFaceMesh.FACEMESH_TESSELATION,
                             self.drawSpec,
                             self.drawSpec
                             )
@@ -43,11 +45,43 @@ class faceDetector:
                     
                     x,y = int(lm.x * iw) , int(lm.y * ih)
                     face.append([x,y])
-                faces.append(face)
+                self.faces.append(face)
+
+
+    def are_lips_closed(self,face_index=0,threshold=0.05) -> bool:
+        lip_pairs = [
+        (13, 14),   # Center
+        (12, 15),   # Outer points
+        (267, 269), # Left corner area
+        (37, 39)    # Right corner area
+    ]
+        face_landmarks = self.faces[face_index]
+        closed = 0
+        for upper,lower in lip_pairs:
+            upper_lip = face_landmarks[upper]
+            lower_lip = face_landmarks[lower]
+            # print(upper_lip,lower_lip)
+            distance = abs(upper_lip[1] - lower_lip[1])
+            print(distance)
+
+            #Normalizing by face Height for better accuracy
+            if len(face_landmarks) > 152:
+                face_height = abs(face_landmarks[10][1] - face_landmarks[152][1])
+                if face_height < 0:
+                    face_height = 0
+                normalized_distance = distance / face_height 
+                if normalized_distance <= threshold:
+                    closed +=1
+                    print(f"Lip Pair Closed {upper} {lower} with Distance {distance}")
+                
+        lips_closed:bool = closed > len(lip_pairs) // 2
+
+        return lips_closed
+
 
 
 def main():
-    cap = cv.videoCapture('')
+    cap = cv2.VideoCapture('Face_detection_testing_videos/test1.mp4')
     pTime = 0
     detector = faceDetector(static_mode=False)
     while True:
@@ -56,10 +90,11 @@ def main():
             print('Cannot Read the Captured Image')
             sys.exit(1)
         detector.findFaceMesh(img,True)
+        lip_closed = detector.are_lips_closed()
         cTime = time.time()
         fps = 1 / (cTime - pTime)
         pTime = cTime
-
+        cv2.putText(img,str(int(fps)),(10,70),cv2.FONT_HERSHEY_PLAIN,3,(255,0,255),3)
 
         cv2.imshow('Face Detection', img)
         cv2.waitKey(1)
