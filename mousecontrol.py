@@ -1,5 +1,6 @@
 import pyautogui
 
+
 def main():
     screenWidth,screenHeight = pyautogui.size()
     print(f'Screen Width: {screenWidth} , Screen Height: {screenHeight}')

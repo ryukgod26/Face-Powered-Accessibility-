@@ -5,7 +5,7 @@ import sys
 
 
 class handDetector:
-    def __init__(self,mode=False,max_hands=4,minDetectionCon=0.5,minTrackingCon=0.5):
+    def __init__(self,mode=True,max_hands=4,minDetectionCon=0.5,minTrackingCon=0.5):
         self.mode = mode
         self.max_hands = max_hands
         self.minDetectionCon = minDetectionCon
