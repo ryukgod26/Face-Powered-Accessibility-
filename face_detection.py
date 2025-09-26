@@ -77,6 +77,13 @@ class faceDetector:
         lips_closed:bool = closed > len(lip_pairs) // 2
 
         return lips_closed
+    
+    def getNosePosition(self,face_index=0):
+        if self.faces and face_index < len(self.faces):
+            nose_tip = self.faces[face_index][1]
+            return nose_tip
+        return None
+    
 
 
 

@@ -1,6 +1,10 @@
 from face_detection import faceDetector
-from hand_detection import handDtector
+from hand_detection import handDetector
 import pyautogui
+import cv2
+import numpy as np
+import time
+import sys
 
 
 
@@ -9,6 +13,7 @@ def main():
     faceReader = faceDetector()
     handReader = handDetector()
     while True:
+        ...
         
 
 

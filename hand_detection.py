@@ -40,7 +40,7 @@ class handDetector:
                 hand = self.results.multi_hand_landmarks[handNo]
                 for id,lm in enumerate(hand.landmark):
                     ih,iw,ic = img.shape
-                    cx,cy = (lm.x * iw) , (lm.y * ih)
+                    cx,cy = int(lm.x * iw) , int(lm.y * ih)
                     lmList.append([id,cx,cy])
                     if draw:
                         cv2.circle(
@@ -55,24 +55,29 @@ class handDetector:
 
 
 def main():
-    cap = cv2.VideoCapture('Face_detection_testing_videos/test1.mp4')
+    cap = cv2.VideoCapture('Face_detection_testing_videos/hands2.mp4')
     pTime = 0
     detector = handDetector()
     while True:
-        success,img = cap.read()
-        # if not success:
-        #     print('Error While trying to read the video or live camera feed.')
-        #     sys.exit(1)
-        img = detector.findHands(img)
-        lmList = detector.findPosition(img)
-        if len(lmList) != 0:
-            print(lmList)
-        cTime = time.time()
-        fps = 1 / (cTime - pTime)
-        pTime = cTime
-        cv2.putText(img,str(int(fps)),(10,70),cv2.FONT_HERSHEY_PLAIN,3,(255,0,255),3)
-        cv2.imshow('Hand Detection',img)
-        cv2.waitKey(1)
+
+        try:
+            success,img = cap.read()
+            # if not success:
+            #     print('Error While trying to read the video or live camera feed.')
+            #     sys.exit(1)
+            img = detector.findHands(img)
+            lmList = detector.findPosition(img)
+            if len(lmList) != 0:
+                print(lmList)
+            cTime = time.time()
+            fps = 1 / (cTime - pTime)
+            pTime = cTime
+            cv2.putText(img,str(int(fps)),(10,70),cv2.FONT_HERSHEY_PLAIN,3,(255,0,255),3)
+            cv2.imshow('Hand Detection',img)
+            cv2.waitKey(1)
+        except KeyboardInterrupt:
+            print('Thanks For Using😁.')
+            sys.exit(0)
 
 if __name__ == '__main__':
     main()
