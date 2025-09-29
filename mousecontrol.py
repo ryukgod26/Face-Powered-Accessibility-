@@ -136,6 +136,9 @@ def main():
                 break
             cv2.putText(img,f'Screen : ({smoothX} {smoothY})', (10,30),cv2.FONT_HERSHEY_SIMPLEX,0.7,(255,0,255),2)
         
+        if detector.are_lips_closed:
+            pyautogui.click(button='right')
+            #pyautogui.click()
         cTime = time.time()
         fps = 1 / (cTime - pTime)
         pTime = cTime
