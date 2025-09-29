@@ -55,7 +55,7 @@ class handDetector:
 
 
 def main():
-    cap = cv2.VideoCapture('Face_detection_testing_videos/hands2.mp4')
+    cap = cv2.VideoCapture('Face_detection_testing_videos/test2.mp4')
     pTime = 0
     detector = handDetector()
     while True:

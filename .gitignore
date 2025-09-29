@@ -1,6 +1,6 @@
 # Virtual environment
 faceAccessibility/
-
+Face_detection_testing_videos/
 # Python cache files
 __pycache__/
 *.pyc

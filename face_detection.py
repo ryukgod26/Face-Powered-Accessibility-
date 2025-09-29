@@ -46,6 +46,7 @@ class faceDetector:
                     x,y = int(lm.x * iw) , int(lm.y * ih)
                     face.append([x,y])
                 self.faces.append(face)
+        return img
 
 
     def are_lips_closed(self,face_index=0,threshold=0.05) -> bool:
