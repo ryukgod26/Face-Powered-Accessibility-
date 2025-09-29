@@ -3,7 +3,7 @@ import cv2
 import pyautogui
 import time,sys
 from face_detection import faceDetector
-
+import math
 
 class noseController():
     def __init__(self,frameWidth,frameHeight):
@@ -16,6 +16,11 @@ class noseController():
         self.frameWidth = frameWidth
         self.frameHeight = frameHeight
 
+        self.centerX = self.frameHeight // 2
+        self.centerY = self.frameHeight // 2
+
+        self.moveSpeed = 10
+        self.deadZone = 50
         self.sensitivity = 2.0
 
         pyautogui.FAILSAFE = True
@@ -37,7 +42,58 @@ class noseController():
         self.prevX ,self.prevY = smoothX,smoothY
 
         return int(smoothX),int(smoothY)
+    
+    #I used AI for this Function
+    def calculate_direction(self,noseX,noseY):
+        
+        deltaX = noseX - self.centerX
+        deltaY = noseY - self.centerY
+      # Apply dead zone - no movement if nose is near center
+        if abs(deltaX) < self.deadZone and abs(deltaY) < self.deadZone:
+            return 0, 0  # No movement
+        
+        # Normalize direction (convert to unit vector)
+        
+        distance = math.sqrt(deltaX**2 + deltaY**2)
+        if distance == 0:
+            return 0, 0
+        
+        # Calculate direction vector
+        dirX = deltaX / distance
+        dirY = deltaY / distance
+        
+        # Apply sensitivity and speed
+        moveX = dirX * self.moveSpeed * self.sensitivity
+        moveY = dirY * self.moveSpeed * self.sensitivity
+        
+        return moveX, moveY
 
+    #I used AI for this Function
+    def move_directional(self, noseX, noseY):
+        """Move cursor in the direction of nose movement"""
+        # Get current mouse position
+        currentX, currentY = pyautogui.position()
+        
+        # Calculate movement direction
+        moveX, moveY = self.calculate_direction(noseX, noseY)
+        
+        # Calculate new position
+        newX = currentX + moveX
+        newY = currentY + moveY
+        
+        # Clamp to screen boundaries
+        newX = max(0, min(self.sWidth - 1, newX))
+        newY = max(0, min(self.sHeight - 1, newY))
+        
+        return int(newX), int(newY)
+
+    def smooth_movement(self,newX,newY):
+        smoothX = self.prevX + (newX - self.prevX) / self.smoothFactor
+        smoothY = self.prevY + (newY - self.prevY) / self.smoothFactor
+    
+        self.prevX ,self.prevY = smoothX,smoothY
+
+        return int(smoothX),int(smoothY)
 
 
 def main():
@@ -65,8 +121,12 @@ def main():
         if nosePos:
             noseX,noseY = nosePos
             cv2.circle(img, (noseX, noseY), 10, (0, 255, 0), cv2.FILLED)
-            screenX,screenY = controller.map_nose_to_screen(noseX,noseY)
-            smoothX,smoothY = controller.smooth_movement(screenX,screenY)
+            # screenX,screenY = controller.map_nose_to_screen(noseX,noseY)
+            # smoothX,smoothY = controller.smooth_movement(screenX,screenY)
+
+            targetX,targetY = controller.move_directional(noseX,noseY)
+            smoothX,smoothY = controller.smooth_movement(targetX,targetY)
+
 
             try:
                 pyautogui.moveTo(smoothX,smoothY)
