@@ -3,6 +3,7 @@ import time
 import cv2
 import os
 import sys
+from hand_detection import handDetector
 
 class aiPainter:
     def __init__(self,folderPath='.',imgPath='test.img'):
@@ -17,11 +18,25 @@ class aiPainter:
         print(len(self.overlayList))
         header = self.overlayList[0]
         self.drawCol = (255,0,255)
+    
+    def select_mode(self,fingers:list):
+        if fingers[0] :
+            print('Thumb is Up')
+        if fingers[1]:
+            print('Index Finger is up')
+        if fingers[2]:
+            print("Middle finger is up")
+        if fingers[3]:
+            print('Ring Finger is up')
+        if fingers[4]:
+            print('Pinky Finger is up')
+        
 
 
 def main():
-    cap = cv2.VideoCapture('')
+    cap = cv2.VideoCapture(0)
     pTime = 0
+    painter = aiPainter()
     while True:
         success,img = cap.read()
         if not success:

@@ -72,7 +72,7 @@ class handDetector:
         return fingers
 
 def main():
-    cap = cv2.VideoCapture('Face_detection_testing_videos/test4.mp4')
+    cap = cv2.VideoCapture(0)
     pTime = 0
     detector = handDetector()
     while True:

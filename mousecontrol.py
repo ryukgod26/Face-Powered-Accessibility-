@@ -97,7 +97,7 @@ class noseController():
 
 
 def main():
-    cap = cv2.VideoCapture('Face_detection_testing_videos/test3.mp4')
+    cap = cv2.VideoCapture(0)
    # cap = cv2.VideoCapture(1)
     frameWidth = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frameHeight = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
