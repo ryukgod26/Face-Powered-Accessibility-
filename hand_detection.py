@@ -12,6 +12,8 @@ class handDetector:
         self.minTrackingCon = minTrackingCon
         self.mpDraw = mp.solutions.drawing_utils
         self.mphands = mp.solutions.hands
+        #For Thumbs and fingers
+        self.tipIds = [4,8,12,16,20]
         self.hands = self.mphands.Hands(
                 static_image_mode=self.mode,
                 max_num_hands=self.max_hands,
@@ -34,14 +36,14 @@ class handDetector:
         return img
 
     def findPosition(self,img,handNo=0,draw=True):
-        lmList = []
+        self.lmList = []
         if self.results.multi_hand_landmarks:
             if handNo < len(self.results.multi_hand_landmarks):
                 hand = self.results.multi_hand_landmarks[handNo]
                 for id,lm in enumerate(hand.landmark):
                     ih,iw,ic = img.shape
                     cx,cy = int(lm.x * iw) , int(lm.y * ih)
-                    lmList.append([id,cx,cy])
+                    self.lmList.append([id,cx,cy])
                     if draw:
                         cv2.circle(
                             img,
@@ -51,11 +53,26 @@ class handDetector:
                             cv2.FILLED
                                 )
 
-        return lmList
+        return self.lmList
+    
+    def fingersUp(self):
+        fingers = []
+        #For Thumb
+        if self.lmList[0][1] > self.lmList[self.tipIds[0] - 1][1]:
+            fingers.append(1)
+        else:
+            fingers.append(0)
 
+        for id in range(1,5):
+            if self.lmList[self.tipIds[id]][2] < self.lmList[self.tipIds[id] -2][2]:
+                fingers.append(1)
+            else:
+                fingers.append(0)
+        print(fingers)
+        return fingers
 
 def main():
-    cap = cv2.VideoCapture('Face_detection_testing_videos/test2.mp4')
+    cap = cv2.VideoCapture('Face_detection_testing_videos/hands2.mp4')
     pTime = 0
     detector = handDetector()
     while True:
@@ -67,8 +84,10 @@ def main():
             #     sys.exit(1)
             img = detector.findHands(img)
             lmList = detector.findPosition(img)
+                
             if len(lmList) != 0:
-                print(lmList)
+                fingers = detector.fingersUp()
+                print(fingers.count(1))
             cTime = time.time()
             fps = 1 / (cTime - pTime)
             pTime = cTime
