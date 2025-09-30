@@ -58,7 +58,7 @@ class handDetector:
     def fingersUp(self):
         fingers = []
         #For Thumb
-        if self.lmList[0][1] > self.lmList[self.tipIds[0] - 1][1]:
+        if self.lmList[self.tipIds[0]][1] > self.lmList[self.tipIds[0] - 1][1]:
             fingers.append(1)
         else:
             fingers.append(0)
@@ -72,7 +72,7 @@ class handDetector:
         return fingers
 
 def main():
-    cap = cv2.VideoCapture('Face_detection_testing_videos/hands2.mp4')
+    cap = cv2.VideoCapture('Face_detection_testing_videos/test4.mp4')
     pTime = 0
     detector = handDetector()
     while True:
