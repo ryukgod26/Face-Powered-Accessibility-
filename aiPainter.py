@@ -20,16 +20,26 @@ class aiPainter:
         self.drawCol = (255,0,255)
     
     def select_mode(self,fingers:list):
-        if fingers[0] :
-            print('Thumb is Up')
-        if fingers[1]:
-            print('Index Finger is up')
-        if fingers[2]:
-            print("Middle finger is up")
-        if fingers[3]:
-            print('Ring Finger is up')
-        if fingers[4]:
-            print('Pinky Finger is up')
+        # if fingers[0] :
+        #     print('Thumb is Up')
+        # if fingers[1]:
+        #     print('Index Finger is up')
+        # if fingers[2]:
+        #     print("Middle finger is up")
+        # if fingers[3]:
+        #     print('Ring Finger is up')
+        # if fingers[4]:
+        #     print('Pinky Finger is up')
+        if fingers[1] and fingers[2]:
+            self.mode = 'selection'
+        if fingers[1] and fingers[2] == False:
+            self.mode = 'drawing'
+    
+    def draw(self):
+        if self.mode == 'selection':
+            ...
+        elif self.mode == 'drawing':
+            ...
         
 
 

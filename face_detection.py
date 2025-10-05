@@ -98,7 +98,7 @@ def main():
             print('Cannot Read the Captured Image')
             sys.exit(1)
         detector.findFaceMesh(img,True)
-        lip_closed = detector.are_lips_closed()
+      #  lip_closed = detector.are_lips_closed()
         cTime = time.time()
         fps = 1 / (cTime - pTime)
         pTime = cTime
