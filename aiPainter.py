@@ -4,12 +4,14 @@ import cv2
 import os
 import sys
 from hand_detection import handDetector
+import numpy as np
 
 class aiPainter:
     def __init__(self,folderPath='.',imgPath='test.img'):
         self.folderPath = folderPath
         self.imgPath = imgPath
         myList = os.listdir(folderPath)
+        self.detextor = handDetector()
         print(myList)
         self.overlayList = []
         for self.imgPath in myList:
@@ -18,8 +20,13 @@ class aiPainter:
         print(len(self.overlayList))
         header = self.overlayList[0]
         self.drawCol = (255,0,255)
-    
-    def select_mode(self,fingers:list):
+        self.imgCanvas = np.zeros((720,1080,3),np.uint8);
+        
+    def select_mode(self):
+        detector.findPosition()
+        fingers = detector.fingersUp()
+        if len(fingers) != 0:
+            return
         # if fingers[0] :
         #     print('Thumb is Up')
         # if fingers[1]:
@@ -36,10 +43,13 @@ class aiPainter:
             self.mode = 'drawing'
     
     def draw(self):
+        if not self.mode:
+            return
         if self.mode == 'selection':
             ...
         elif self.mode == 'drawing':
             ...
+    
         
 
 
@@ -52,7 +62,7 @@ def main():
         if not success:
             print('Error in reading the Video or Camera.')
             sys.exit(1)
-        
+        img = cv2.filp(img,1)
         cTime = time.time()
         fps = 1 / (cTime - pTime)
         pTime = cTime

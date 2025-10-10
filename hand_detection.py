@@ -57,6 +57,9 @@ class handDetector:
     
     def fingersUp(self):
         fingers = []
+        if len(self.lmList) != 0:
+            return fingers
+
         #For Thumb
         if self.lmList[self.tipIds[0]][1] > self.lmList[self.tipIds[0] - 1][1]:
             fingers.append(1)
