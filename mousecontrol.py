@@ -1,6 +1,5 @@
 import pyautogui
 import cv2
-import pyautogui
 import time,sys
 from face_detection import faceDetector
 import math
@@ -114,7 +113,7 @@ def main():
             print('Cannot Read Video Or Camera')
             sys.exit(-1)
         
-        #img = cv2.flip(img,1)
+        img = cv2.flip(img,1)
         img = detector.findFaceMesh(img)
         nosePos = detector.getNosePosition()
 
@@ -136,13 +135,13 @@ def main():
                 break
             cv2.putText(img,f'Screen : ({smoothX} {smoothY})', (10,30),cv2.FONT_HERSHEY_SIMPLEX,0.7,(255,0,255),2)
         
-        if detector.are_lips_closed:
-            pyautogui.click(button='right')
+        # if detector.are_lips_closed:
+        #     pyautogui.click(button='right')
             #pyautogui.click()
         cTime = time.time()
         fps = 1 / (cTime - pTime)
         pTime = cTime
-        cv2.putText(img,f'FPS:{fps}',(10,70),cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,255),2)
+        cv2.putText(img,f'FPS:{int(fps)}',(10,70),cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,255),2)
 
         cv2.imshow('Nose Control System',img)
         cv2.waitKey(1)

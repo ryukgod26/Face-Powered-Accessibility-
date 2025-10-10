@@ -82,9 +82,10 @@ def main():
 
         try:
             success,img = cap.read()
-            # if not success:
-            #     print('Error While trying to read the video or live camera feed.')
-            #     sys.exit(1)
+            if not success:
+                print('Error While trying to read the video or live camera feed.')
+                sys.exit(1)
+            img = cv2.flip(img,1)
             img = detector.findHands(img)
             lmList = detector.findPosition(img)
                 

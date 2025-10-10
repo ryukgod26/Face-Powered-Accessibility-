@@ -97,6 +97,7 @@ def main():
         if not success:
             print('Cannot Read the Captured Image')
             sys.exit(1)
+        img = cv2.flip(img,1)
         detector.findFaceMesh(img,True)
       #  lip_closed = detector.are_lips_closed()
         cTime = time.time()

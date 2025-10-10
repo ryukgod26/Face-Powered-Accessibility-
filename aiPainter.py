@@ -23,15 +23,15 @@ class aiPainter:
         print(len(self.overlayList))
         self.header = self.overlayList[0]
         self.drawCol = (255,0,255)
-        self.imgCanvas = np.zeros((720,1080,3),np.uint8);
+        self.imgCanvas = np.zeros((720,1080,3),np.uint8)
         self.xp,self.yp
         self.brushThickness = 25
         self.eraseThickness = 100
 
-    def select_mode(self):
-        self.lmList = self.detector.findPosition()
-        self.fingers = detector.fingersUp()
-        if len(fingers) != 0:
+    def select_mode(self,img):
+        self.lmList = self.detector.findPosition(img)
+        self.fingers = self.detector.fingersUp()
+        if len(self.fingers) != 0:
             return
         # if fingers[0] :
         #     print('Thumb is Up')
@@ -49,7 +49,7 @@ class aiPainter:
         if self.fingers[1] and self.fingers[2] == False:
             self.mode = 'drawing'
     
-    def draw(self):
+    def draw(self,img):
         if not self.mode:
             return
 
@@ -76,16 +76,15 @@ class aiPainter:
                 elif 1050 < x1 < 1200:
                     self.header = self.overlayList[3]
                     self.drawColor = (0,0,0)
-        cv2.rectangle(img,(x1,y1-25),(x2,y2+25),self.drawColor,cv2.FILLED)
+            cv2.rectangle(img,(x1,y1-25),(x2,y2+25),self.drawColor,cv2.FILLED)
 
         elif self.mode == 'drawing':
             cv2.circle(img,(x1,y1),15,self.drawColor,cv2.FILLED)
-            if xp == 0 and yp ==0:
+            if self.xp == 0 and self.yp ==0:
                 self.xp,self.yp = x1,y1
             cv2.line(img,(self.xp,yp),(x1,y1),self.drawColor,self.brushThickness)
 
             self.xp,self.yp = x1,y1
-
 
 
 def main():
@@ -94,6 +93,7 @@ def main():
     painter = aiPainter()
     while True:
         success,img = cap.read()
+        img = cv2.flip(img,1)
         if not success:
             print('Error in reading the Video or Camera.')
             sys.exit(1)
