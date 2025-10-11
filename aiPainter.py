@@ -15,7 +15,7 @@ class aiPainter:
         self.detector = handDetector()
         self.drawColor = (255,0,0)
         self.fingers = []
-        print(myList)
+        self.mode = ''
         self.overlayList = []
         for self.imgPath in myList:
             img = cv2.imread(f'{self.folderPath}/{self.imgPath}')
@@ -24,17 +24,17 @@ class aiPainter:
         self.header = self.overlayList[0]
         self.drawCol = (255,0,255)
         self.imgCanvas = np.zeros((720,1080,3),np.uint8)
-        self.xp,self.yp
         self.brushThickness = 25
         self.eraseThickness = 100
 
     def select_mode(self,img):
+        img = self.detector.findHands(img,False)
         self.lmList = self.detector.findPosition(img)
         self.fingers = self.detector.fingersUp()
-        if len(self.fingers) != 0:
-            return
+        if len(self.fingers) == 0:
+            return img
         # if fingers[0] :
-        #     print('Thumb is Up')
+        #     print('Thumb 0is Up')
         # if fingers[1]:
         #     print('Index Finger is up')
         # if fingers[2]:
@@ -48,13 +48,14 @@ class aiPainter:
             self.xp,self.yp = 0,0
         if self.fingers[1] and self.fingers[2] == False:
             self.mode = 'drawing'
+        return img
     
     def draw(self,img):
-        if not self.mode:
-            return
+        if self.mode == '':
+            return img
 
         if len(self.lmList) == 0 or len(self.fingers) == 0:
-            return
+            return img
 
         #Tip of Index and middle Finger
         x1,y1 = self.lmList[8][1:]
@@ -82,9 +83,10 @@ class aiPainter:
             cv2.circle(img,(x1,y1),15,self.drawColor,cv2.FILLED)
             if self.xp == 0 and self.yp ==0:
                 self.xp,self.yp = x1,y1
-            cv2.line(img,(self.xp,yp),(x1,y1),self.drawColor,self.brushThickness)
+            cv2.line(img,(self.xp,self.yp),(x1,y1),self.drawColor,self.brushThickness)
 
             self.xp,self.yp = x1,y1
+        return img
 
 
 def main():
@@ -97,12 +99,17 @@ def main():
         if not success:
             print('Error in reading the Video or Camera.')
             sys.exit(1)
-        img = cv2.filp(img,1)
+        img = painter.select_mode(img)
+        img = painter.draw(img)
         cTime = time.time()
         fps = 1 / (cTime - pTime)
         pTime = cTime
         cv2.putText(img,str(int(fps)),(10,70),cv2.FONT_HERSHEY_PLAIN,3,(255,0,255),3)
-
+        # imgGray = cv2.cvtColor(imgCanvas, cv2.COLOR_BGR2GRAY)
+        # _, imgInv = cv2.threshold(imgGray, 50, 255, cv2.THRESH_BINARY_INV)
+        # imgInv = cv2.cvtColor(imgInv,cv2.COLOR_GRAY2BGR)
+        # img = cv2.bitwise_and(img,imgInv)
+        # img = cv2.bitwise_or(img,imgCanvas)
         cv2.imshow('AI Painter', img)
         cv2.waitKey(1)
 

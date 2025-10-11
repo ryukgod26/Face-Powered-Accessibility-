@@ -20,6 +20,7 @@ class handDetector:
                 min_detection_confidence=self.minDetectionCon,
                 min_tracking_confidence=self.minTrackingCon
                 )
+
     
     def findHands(self,img,show=True):
         imgRGB = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
@@ -57,7 +58,7 @@ class handDetector:
     
     def fingersUp(self):
         fingers = []
-        if len(self.lmList) != 0:
+        if len(self.lmList) == 0:
             return fingers
 
         #For Thumb
